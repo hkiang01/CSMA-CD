@@ -57,7 +57,7 @@ class Channel:
 		self.simTime = T
 		self.channelOccupied = 0
 		self.occupiedTime = 0
-		self.utilCount = 0
+		self.occupiedCount = 0
 		self.idleCount = 0
 		self.nodes = []
 		self.collisions = 0
@@ -69,13 +69,14 @@ class Channel:
 	def freeChennel(self):
 		self.channelOccupied = 0
 	def getOccupiedPct(self):
-		return self.occupiedCount/(self.occupiedCount + self.idleCount)
+		return (float(self.occupiedCount)/float((self.occupiedCount + self.idleCount)))*100.0
 	def getIdlePct(self):
-		return self.idleCount/(self.idleCount + self.occupiedCount)
+		return (float(self.idleCount)/float((self.occpiedCount + self.idleCount)))*100.0
 	def initNodes(self):
 		for node in self.nodes:
 			node.setRange(self.ranges[0])
-			node.setBackoff()	
+			node.setBackoff()
+			node.setRanges(self.ranges)
 			print node.backoff
 	def tick(self):
 		self.occupiedTime = max(0,self.occupiedTime - 1)
@@ -89,17 +90,26 @@ class Channel:
 			for node in self.nodes:
 				if(node.backoff==0):
 					zerolist.append(node)
-			if(len(zerolist == 1): # claim the channel case
+			if(len(zerolist) == 1): # claim the channel case
 				self.channelOccupied = zerolist[0].ID
-				self.occupiedTime = self.L
-			elif(len(zerolist) != 0): # collisions case
+				self.occupiedTime = self.packetSize
+			elif(len(zerolist) > 1): # collisions case
 				self.collisions += 1#len(zerolist) - 1
 				for i in range(len(zerolist)):
 					zerolist[i].collision()
 			else:
 				for node in self.nodes:
 					node.countDown()
+				self.idleCount = self.idleCount + 1
+		else: # occupied channel case
+			self.occupiedCount = self.occupiedCount + 1
+	def printResults(self):
+		print "Channel Utilization percentage: " + str(self.getOccupiedPct())
+		print "Channel Idle percentage: " + str(self.getIdlePct)
+		print "Total number of collision: " + str(self.collisions)
+		
 
+	
 def parse(filename):
 	f = open(filename, "r")
 	lines = f.readlines()
@@ -151,7 +161,7 @@ def main():
 	channel.initNodes()
 	for simulation in xrange(0, channel.simTime):
 		channel.tick()
-
+	channel.printResults()
 
 if __name__ == '__main__':
 	main();
