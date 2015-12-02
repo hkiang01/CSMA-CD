@@ -60,6 +60,8 @@ class Channel:
 		self.avgLocalSent = 0.0
 		self.totalLocalCollisions = 0
 		self.avgLocalCollisions = 0.0
+		self.varianceSent = 0.0
+		self.varianceCollisions = 0.0
 		for i in range(self.numNodes):
 			self.nodes.append(Node(i+1, self.maxAttempts))
 	def occupyChannel(self, nodeID):
@@ -73,11 +75,21 @@ class Channel:
 	def getAvgST(self):
 		for node in self.nodes:
 			self.totalLocalSent += node.numSent
-		self.avgLocalSent = float(self.totalLocalSent)/float(len(self.nodes))/float(self.packetSize)
+		self.avgLocalSent = float(self.totalLocalSent)/float(len(self.nodes))
+	def getVarST(self):
+		totalVariance = 0.0
+		for node in self.nodes:
+			totalVariance += float(self.avgLocalSent-node.numSent)**2.0
+		self.varianceSent = float(totalVariance)/float(len(self.nodes))
 	def getAvgLocalCollisions(self):
 		for node in self.nodes:
 			self.totalLocalCollisions += node.totalCollision
 		self.avgLocalCollisions = float(self.totalLocalCollisions)/float(len(self.nodes))
+	def getVarCollisions(self):
+		totalVariance = 0.0
+		for node in self.nodes:
+			totalVariance += float(self.avgLocalCollisions-node.totalCollision)**2.0
+		self.varianceCollisions = float(totalVariance)/float(len(self.nodes))
 	def initNodes(self):
 		for node in self.nodes:
 			node.setRanges(self.ranges)
@@ -88,9 +100,9 @@ class Channel:
 			if(self.channelOccupied!=0):
 				self.nodes[self.channelOccupied-1].tryCount=0
 				self.nodes[self.channelOccupied-1].setRangeAndBackoff()
-				self.channelOccupied = 0
 				self.successPackets = self.successPackets+1
 				self.nodes[self.channelOccupied-1].numSent = self.nodes[self.channelOccupied-1].numSent + 1
+				self.channelOccupied = 0
 			zerolist = []
 			for node in self.nodes:
 				#print str(node.ID) + ": " + str(node.backoff)
@@ -114,11 +126,13 @@ class Channel:
 	def printResults(self):
 		self.getAvgST()
 		self.getAvgLocalCollisions()
+		self.getVarST()
+		self.getVarCollisions()
 		print "Channel Utilization percentage: " + str(self.getOccupiedPct())
 		print "Channel Idle percentage: " + str(self.getIdlePct())
 		print "Total number of collision: " + str(self.collisions)
-		print "Average number of local collisions: " + str(self.avgLocalCollisions)
-		print "Average number of successful transmissions: " + str(self.avgLocalSent)
+		print "Average number of local collisions: " + str(self.varianceCollisions)
+		print "Average number of successful transmissions: " + str(self.varianceSent)
 
 def parse(filename):
 	f = open(filename, "r")
