@@ -2,7 +2,6 @@
 
 import sys
 from random import randint
-
 class Node:
 	def __init__(self, ID=-1, maxAttempts=0):
 		self.ID = ID
@@ -10,18 +9,41 @@ class Node:
 		self.backoff = -1
 		self.currRange = 0
 		self.tryCount = 0
+		self.ranges = []
 		self.isAwake = True
-	def setBackoff(self, R):
-		self.backoff = randint(0,R)
+		self.numDropped = 0
+	def setBackoff(self):
+		self.backoff = randint(0,self.currRange)
 	def countDown(self):
 		self.backoff = self.backoff-1;
 	def setRange(self, newRange):
 		self.currRange = newRange
+	def setRanges(self,ranges):
+		self.ranges = ranges
+	def getRange(self,index):
+		if(len(self.ranges)==0):
+			return 2**index
+		if(index>=len(self.ranges)):
+			return self.ranges[-1]*(2**(index-len(self.ranges)))
+		else:
+			return self.ranges[index]
+	def setRangeAndBackoff(self):
+		self.setRange(self.getRange(self.tryCount))
+		self.setBackoff()
 	def collision(self):
+		self.tryCount = self.tryCount+1
+		if(self.tryCount>=self.currRange):
+			self.tryCount=0
+			self.numDropped = self.numDropped+1
+			self.setRangeAndBackoff()
+		else:
+			self.setRangeAndBackoff()
+		'''
 		if(self.isAwake):
 			self.tryCount = self.tryCount + 1
 			if(self.tryCount >= self.maxAttempts):
 				self.isAwake = False
+		'''
 			# todo: itereate range (need access to ranges array)
 			# todo: new random number based on new range (access same array)
 
@@ -39,6 +61,7 @@ class Channel:
 		self.idleCount = 0
 		self.nodes = []
 		self.collisions = 0
+		self.successPackets = 0
 		for i in range(self.numNodes+1):
 			self.nodes.append(Node(i, self.maxAttempts))
 	def occupyChannel(self, nodeID):
@@ -52,24 +75,30 @@ class Channel:
 	def initNodes(self):
 		for node in self.nodes:
 			node.setRange(self.ranges[0])
-			node.setBackoff(node.currRange)	
+			node.setBackoff()	
 			print node.backoff
 	def tick(self):
-		self.occupiedTime = self.occupiedTime - 1
+		self.occupiedTime = max(0,self.occupiedTime - 1)
 		if(self.occupiedTime == 0): # open channel case
-			self.channelOccupied = 0
+			if(self.channelOccupied!=0):
+				self.nodes[self.channelOccupied-1].tryCount=0
+				self.nodes[self.channelOccupied-1].setRangeAndBackoff()
+				self.channelOccupied = 0
+				self.successPackets = self.successPackets+1
 			zerolist = []
 			for node in self.nodes:
 				if(node.backoff==0):
 					zerolist.append(node)
-				node.countDown()
 			if(len(zerolist == 1): # claim the channel case
 				self.channelOccupied = zerolist[0].ID
 				self.occupiedTime = self.L
 			elif(len(zerolist) != 0): # collisions case
-				self.collisions += len(zerolist) - 1
-				for i in xrange(1, len(zerolist), 1):
+				self.collisions += 1#len(zerolist) - 1
+				for i in range(len(zerolist)):
 					zerolist[i].collision()
+			else:
+				for node in self.nodes:
+					node.countDown()
 
 def parse(filename):
 	f = open(filename, "r")
