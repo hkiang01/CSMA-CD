@@ -55,20 +55,25 @@ def parse(filename):
 			maxAttempts = int(curr[1])
 		elif(curr[0] == "T"):
 			# print "simTime: " + curr[1]
-			simTime = int(curr[1])
+			simTime = int(curr[1].replace(',', ''))
 		else:
 			print "Error: Invalid input file"
-	print "numNodes: " + numNodes
-	print "packetSize: " + packetSize
-	print "ranges: " +  '[%s]' % ', '.join(map(str, ranges))
-	print "simTime: " + simTime
+	# print "numNodes: " + str(numNodes)
+	# print "packetSize: " + str(packetSize)
+	# print "ranges: " +  '[%s]' % ', '.join(map(str, ranges))
+	# print "simTime: " + str(simTime)
+	result = []
+	result.append(numNodes)
+	result.append(packetSize)
+	result.append(ranges)
+	result.append(simTime)
+	return result
 
 def main():
 	print "test"
-	parse("input.txt")
-
-	for i in xrange(10):
-		print "iteration"
+	args = parse("input.txt")
+	for arg in args:
+		 print str(arg)
 	
 if __name__ == '__main__':
 	main();
