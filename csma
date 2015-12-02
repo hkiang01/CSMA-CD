@@ -232,26 +232,43 @@ def main(argc, argv):
 		args.append(6)
 		args.append(50000)
 		
-		# part a
+		# parts a-c
 		print "Channel Unitlization for N from 5 to 100..."
 		nArray = []
 		utilPcts = []
+		idlePcts = []
 		for n in xrange(5, 101, 1):
 			nArray.append(n)
 			args[0] = n
 			channel = Channel(args)
 			channel.initNodes()
-			totalAfterRuns = 0
+			totalAfterRunsUtil = 0
+			totalAfterRunsIdle = 0
 			for i in xrange(numRuns):
 				for simulation in xrange(0, channel.simTime):
 					channel.tick()
-				totalAfterRuns += (channel.getResultsNums())[0]
-			utilPcts.append(float(totalAfterRuns)/float(numRuns))
-			print "N: " + str(n) + " Channel Utilization: " + str(utilPcts[-1]) + "%"
+				totalAfterRunsUtil += (channel.getResultsNums())[0]
+				totalAfterRunsIdle += (channel.getResultsNums())[1]
+			utilPcts.append(float(totalAfterRunsUtil)/float(numRuns))
+			idlePcts.append(float(totalAfterRunsIdle)/float(numRuns))
+			print "N: " + str(n) + "\tChannel Utilization: " + str(utilPcts[-1]) + " %\t" + " Idle: " + str(idlePcts[-1]) + " %"
+		# part a
+		plt.figure()
 		plt.plot(nArray, utilPcts)
 		plt.ylabel('Channel Utilization (in percentage)')
 		plt.xlabel('N = Number of Nodes (5 to 100)')
 		plt.savefig('parta.png')
+		plt.ioff()
+		plt.close()
+
+		# part b
+		plt.figure()
+		plt.plot(nArray, idlePcts)
+		plt.ylabel('Idle Fraction (in percentage)')
+		plt.xlabel('N = Number of Nodes (5 to 100)')
+		plt.savefig('partb.png')
+		plt.ioff()
+		plt.close()
 
 if __name__ == '__main__':
 	main(len(sys.argv), sys.argv);
