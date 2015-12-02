@@ -10,8 +10,8 @@ class Node:
 		self.currRange = 0
 		self.tryCount = 0
 		self.ranges = []
-		self.isAwake = True
 		self.numDropped = 0
+		self.totalCollision = 0
 	def setBackoff(self):
 		self.backoff = randint(0,self.currRange)
 	def countDown(self):
@@ -32,18 +32,13 @@ class Node:
 		self.setBackoff()
 	def collision(self):
 		self.tryCount = self.tryCount+1
+		self.totalCollision+=1
 		if(self.tryCount>=self.currRange):
 			self.tryCount=0
 			self.numDropped = self.numDropped+1
 			self.setRangeAndBackoff()
 		else:
 			self.setRangeAndBackoff()
-		'''
-		if(self.isAwake):
-			self.tryCount = self.tryCount + 1
-			if(self.tryCount >= self.maxAttempts):
-				self.isAwake = False
-		'''
 			# todo: itereate range (need access to ranges array)
 			# todo: new random number based on new range (access same array)
 
@@ -62,8 +57,8 @@ class Channel:
 		self.nodes = []
 		self.collisions = 0
 		self.successPackets = 0
-		for i in range(self.numNodes+1):
-			self.nodes.append(Node(i, self.maxAttempts))
+		for i in range(self.numNodes):
+			self.nodes.append(Node(i+1, self.maxAttempts))
 	def occupyChannel(self, nodeID):
 		self.channelOccupied = nodeID
 	def freeChennel(self):
@@ -71,13 +66,11 @@ class Channel:
 	def getOccupiedPct(self):
 		return (float(self.occupiedCount)/float((self.occupiedCount + self.idleCount)))*100.0
 	def getIdlePct(self):
-		return (float(self.idleCount)/float((self.occpiedCount + self.idleCount)))*100.0
+		return (float(self.idleCount)/float((self.occupiedCount + self.idleCount)))*100.0
 	def initNodes(self):
 		for node in self.nodes:
-			node.setRange(self.ranges[0])
-			node.setBackoff()
 			node.setRanges(self.ranges)
-			print node.backoff
+			node.setRangeAndBackoff()
 	def tick(self):
 		self.occupiedTime = max(0,self.occupiedTime - 1)
 		if(self.occupiedTime == 0): # open channel case
@@ -88,15 +81,18 @@ class Channel:
 				self.successPackets = self.successPackets+1
 			zerolist = []
 			for node in self.nodes:
+				#print str(node.ID) + ": " + str(node.backoff)
 				if(node.backoff==0):
 					zerolist.append(node)
 			if(len(zerolist) == 1): # claim the channel case
 				self.channelOccupied = zerolist[0].ID
 				self.occupiedTime = self.packetSize
+				self.occupiedCount+=1
 			elif(len(zerolist) > 1): # collisions case
 				self.collisions += 1#len(zerolist) - 1
 				for i in range(len(zerolist)):
 					zerolist[i].collision()
+				self.idleCount += 1
 			else:
 				for node in self.nodes:
 					node.countDown()
@@ -105,7 +101,7 @@ class Channel:
 			self.occupiedCount = self.occupiedCount + 1
 	def printResults(self):
 		print "Channel Utilization percentage: " + str(self.getOccupiedPct())
-		print "Channel Idle percentage: " + str(self.getIdlePct)
+		print "Channel Idle percentage: " + str(self.getIdlePct())
 		print "Total number of collision: " + str(self.collisions)
 		
 
@@ -161,6 +157,8 @@ def main():
 	channel.initNodes()
 	for simulation in xrange(0, channel.simTime):
 		channel.tick()
+		#channel.printResults()
+		#raw_input()
 	channel.printResults()
 
 if __name__ == '__main__':
