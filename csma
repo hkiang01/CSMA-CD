@@ -301,15 +301,45 @@ def main(argc, argv):
 						channel.tick()
 					totalAfterRunsUtil += (channel.getResultsNums())[0]
 				utilPcts.append(float(totalAfterRunsUtil)/float(numRuns))
-				print "N: " + str(n) + "\tChannel Utilization: " + str(utilPcts[-1])
-	
-			# part d
-			plt.plot(nArray, utilPcts)
+				print "R: " + str(rangeD) + "\tN: " + str(n) + "\tChannel Utilization: " + str(utilPcts[-1])
+			plt.plot(nArray, utilPcts, label = "R=" + str(rangeD))
+
 		plt.ylabel('Channel Utilization (in percentage)')
 		plt.xlabel('N = Number of Nodes (5 to 100)')
+		plt.legend()
 		plt.savefig('partd.png')
 		plt.ioff()
 		plt.close()
+
+		# part e
+		args[2] = [8, 16, 32, 64, 128]
+		lValues = [20, 40, 60, 80, 100]
+		plt.figure()
+		for lval in lValues:
+			args[1] = lval
+			nArray = []
+			utilPcts = []
+			for n in xrange(5, 101, 1):
+				nArray.append(n)
+				args[0] = n
+				channel = Channel(args)
+				channel.initNodes()
+				totalAfterRunsUtil = 0
+				for i in xrange(numRuns):
+					for simulation in xrange(0, channel.simTime):
+						channel.tick()
+					totalAfterRunsUtil += (channel.getResultsNums())[0]
+				utilPcts.append(float(totalAfterRunsUtil)/float(numRuns))
+				print "L: " + str(lval) + "\tN: " + str(n) + "\tChannel Utilization: " + str(utilPcts[-1])
+			plt.plot(nArray, utilPcts, label = "L=" + str(lval))
+ 
+                plt.ylabel('Channel Utilization (in percentage)')
+                plt.xlabel('N = Number of Nodes (5 to 100)')
+                plt.legend()
+                plt.savefig('parte.png')
+                plt.ioff()
+                plt.close()
+
 
 if __name__ == '__main__':
 	main(len(sys.argv), sys.argv);
