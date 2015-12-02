@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
-generatePlots = True
-numRuns = 1
+generatePlots = False
+numRuns = 5
 
 import sys
 from random import randint
@@ -224,7 +224,6 @@ def main(argc, argv):
 	f.close()
 
 	if(generatePlots):
-		
 		args = []
 		args.append(25)
 		args.append(20)
