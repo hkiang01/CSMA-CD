@@ -134,6 +134,10 @@ class Channel:
 		print "Variance in number of successful transmissions: " + str(self.varianceSent)
 		print "Variance in number of local collisions: " + str(self.varianceCollisions)
 	def getResults(self):
+		self.getAvgST()
+		self.getAvgLocalCollisions()
+		self.getVarST()
+		self.getVarCollisions()
 		results = ""
 		results += (str(self.getOccupiedPct()) + str("\n"))
 		results += (str(self.getIdlePct()) + str("\n"))
