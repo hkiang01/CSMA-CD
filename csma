@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 generatePlots = True
-numRuns = 2
+numRuns = 1
 
 import sys
 from random import randint
@@ -234,8 +234,10 @@ def main(argc, argv):
 		
 		# part a
 		print "Channel Unitlization for N from 5 to 100..."
+		nArray = []
 		utilPcts = []
 		for n in xrange(5, 101, 1):
+			nArray.append(n)
 			args[0] = n
 			channel = Channel(args)
 			channel.initNodes()
@@ -245,7 +247,11 @@ def main(argc, argv):
 					channel.tick()
 				totalAfterRuns += (channel.getResultsNums())[0]
 			utilPcts.append(float(totalAfterRuns)/float(numRuns))
-			print "N: " + str(n) + " Channel Utilization %: " + str(utilPcts[-1])
+			print "N: " + str(n) + " Channel Utilization: " + str(utilPcts[-1]) + "%"
+		plt.plot(nArray, utilPcts)
+		plt.ylabel('Channel Utilization (in percentage)')
+		plt.xlabel('N = Number of Nodes (5 to 100)')
+		plt.savefig('parta.png')
 
 if __name__ == '__main__':
 	main(len(sys.argv), sys.argv);
