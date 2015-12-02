@@ -34,6 +34,7 @@ class Channel:
 		self.maxAttempts = M
 		self.simTime = T
 		self.channelOccupied = 0
+		self.occupiedTime = 0
 		self.utilCount = 0
 		self.idleCount = 0
 		self.nodes = []
@@ -54,17 +55,21 @@ class Channel:
 			node.setBackoff(node.currRange)	
 			print node.backoff
 	def tick(self):
-		zerolist = []
-		for node in self.nodes:
-			if(node.backoff==0):
-				zerolist.append(node)
-			node.countDown()
-		if(len(zerolist) != 0):
-			# zerolist[0] will own the channel
-			channelOccupied = zerolist[0].ID
-			self.collisions += len(zerolist) - 1
-			for i in xrange(1, len(zerolist), 1):
-				zerolist[i].collision()
+		self.occupiedTime = self.occupiedTime - 1
+		if(self.occupiedTime == 0): # open channel case
+			self.channelOccupied = 0
+			zerolist = []
+			for node in self.nodes:
+				if(node.backoff==0):
+					zerolist.append(node)
+				node.countDown()
+			if(len(zerolist == 1): # claim the channel case
+				self.channelOccupied = zerolist[0].ID
+				self.occupiedTime = self.L
+			elif(len(zerolist) != 0): # collisions case
+				self.collisions += len(zerolist) - 1
+				for i in xrange(1, len(zerolist), 1):
+					zerolist[i].collision()
 
 def parse(filename):
 	f = open(filename, "r")
