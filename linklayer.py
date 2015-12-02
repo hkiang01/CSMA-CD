@@ -1,15 +1,19 @@
 #!/usr/bin/python
 
 import sys
+from random import randint
 
 class Node:
 	def __init__(self, ID=-1):
 		self.ID = ID
 		self.backoff = -1
+		self.currRange = 0
 	def setBackoff(self, R):
 		self.backoff = randint(0,R)
 	def countDown(self):
 		self.backoff = self.backoff-1;
+	def setRange(self, newRange):
+		self.currRange = newRange
 
 class Channel:
 	def __init__ (self, args):
@@ -23,7 +27,7 @@ class Channel:
 		self.utilCount = 0
 		self.idleCount = 0
 		self.nodes = []
-		for i in range(self.numNodes):
+		for i in range(self.numNodes+1):
 			self.nodes.append(Node(i))
 	def occupyChannel(self, nodeID):
 		self.channelOccupied = nodeID
@@ -33,7 +37,11 @@ class Channel:
 		return self.occupiedCount/(self.occupiedCount + self.idleCount)
 	def getIdlePct(self):
 		return self.idleCount/(self.idleCount + self.occupiedCount)
-
+	def initNodes(self):
+		for node in self.nodes:
+			node.setRange(self.ranges[0])
+			node.setBackoff(node.currRange)	
+			print node.backoff
 def parse(filename):
 	f = open(filename, "r")
 	lines = f.readlines()
@@ -81,6 +89,11 @@ def main():
 	for arg in args:
 		 print str(arg)
 	channel = Channel(args)
+
+	channel.initNodes()
+	
+
+
 if __name__ == '__main__':
 	main();
 
