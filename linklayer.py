@@ -34,7 +34,7 @@ class Node:
 	def collision(self):
 		self.tryCount = self.tryCount+1
 		self.totalCollision+=1
-		if(self.tryCount>=self.currRange):
+		if(self.tryCount>=self.maxAttempts):
 			self.tryCount=0
 			self.numDropped = self.numDropped+1
 			self.setRangeAndBackoff()
