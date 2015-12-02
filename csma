@@ -122,7 +122,7 @@ class Channel:
 				self.collisions += 1#len(zerolist) - 1
 				for i in range(len(zerolist)):
 					zerolist[i].collision()
-				self.occupiedCount += 1
+				#self.occupiedCount += 1
 			else:
 				for node in self.nodes:
 					node.countDown()
@@ -253,7 +253,7 @@ def main(argc, argv):
 				totalAfterRunsCollisions += (channel.getResultsNums())[2]
 			utilPcts.append(float(totalAfterRunsUtil)/float(numRuns))
 			idlePcts.append(float(totalAfterRunsIdle)/float(numRuns))
-			collisions.append(totalAfterRunsCollisions)
+			collisions.append(float(totalAfterRunsCollisions)/float(numRuns))
 			print "N: " + str(n) + "\tChannel Utilization: " + str(utilPcts[-1]) + " %\t" + " Idle: " + str(idlePcts[-1]) + " %\t" + "Collisions: " + str(collisions[-1])
 		# part a
 		plt.figure()
