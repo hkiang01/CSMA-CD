@@ -317,7 +317,8 @@ def main(argc, argv):
 		# part e
 		args[2] = [8, 16, 32, 64, 128]
 		lValues = [20, 40, 60, 80, 100]
-		plt.figure()
+		fig = plt.figure()
+		ax = plt.subplot(111)
 		for lval in lValues:
 			args[1] = lval
 			nArray = []
@@ -335,10 +336,12 @@ def main(argc, argv):
 				utilPcts.append(float(totalAfterRunsUtil)/float(numRuns))
 				print "L: " + str(lval) + "\tN: " + str(n) + "\tChannel Utilization: " + str(utilPcts[-1]) + "%"
 			plt.plot(nArray, utilPcts, label = "L=" + str(lval))
- 
+		box = ax.get_position()
+		ax.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
+		ax.legend(loc='upper center', bbox_to_anchor=(.5, -0.10), fancybox=True, shadow=True, ncol=len(lValues))
                 plt.ylabel('Channel Utilization (in percentage)')
                 plt.xlabel('N = Number of Nodes (5 to 100)')
-                plt.legend()
+                # plt.legend()
                 plt.savefig('parte.png')
                 plt.ioff()
                 plt.close()
