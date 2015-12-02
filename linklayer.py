@@ -66,7 +66,7 @@ class Channel:
 			self.nodes.append(Node(i+1, self.maxAttempts))
 	def occupyChannel(self, nodeID):
 		self.channelOccupied = nodeID
-	def freeChennel(self):
+	def freeChannel(self):
 		self.channelOccupied = 0
 	def getOccupiedPct(self):
 		return (float(self.occupiedCount)/float((self.occupiedCount + self.idleCount)))*100.0
@@ -116,11 +116,11 @@ class Channel:
 				self.collisions += 1#len(zerolist) - 1
 				for i in range(len(zerolist)):
 					zerolist[i].collision()
-				self.idleCount += 1
+				self.occupiedCount += 1
 			else:
 				for node in self.nodes:
 					node.countDown()
-				self.idleCount = self.idleCount + 1
+				self.idleCount += 1
 		else: # occupied channel case
 			self.occupiedCount = self.occupiedCount + 1
 	def printResults(self):
@@ -131,8 +131,16 @@ class Channel:
 		print "Channel Utilization percentage: " + str(self.getOccupiedPct())
 		print "Channel Idle percentage: " + str(self.getIdlePct())
 		print "Total number of collision: " + str(self.collisions)
-		print "Average number of local collisions: " + str(self.varianceCollisions)
-		print "Average number of successful transmissions: " + str(self.varianceSent)
+		print "Variance in number of successful transmissions: " + str(self.varianceSent)
+		print "Variance in number of local collisions: " + str(self.varianceCollisions)
+	def getResults(self):
+		results = ""
+		results += (str(self.getOccupiedPct()) + str("\n"))
+		results += (str(self.getIdlePct()) + str("\n"))
+		results += (str(self.collisions) + str("\n"))
+		results += (str(self.varianceSent) + str("\n"))
+		results += (str(self.varianceCollisions) + str("\n"))
+		return results
 
 def parse(filename):
 	f = open(filename, "r")
@@ -188,6 +196,10 @@ def main():
 		#channel.printResults()
 		#raw_input()
 	channel.printResults()
+
+	f = open("output.txt", "w")
+	f.write(channel.getResults())
+	f.close()
 
 if __name__ == '__main__':
 	main();
