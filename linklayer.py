@@ -33,23 +33,35 @@ class Channel:
 def parse(filename):
 	f = open(filename, "r")
 	lines = f.readlines()
+	numNodes = 0
+	packetSize = 0
+	ranges = []
+	simTime = 0
 	for line in lines:
 		#grab initialization vars
 		curr = line.split(" ")
 		if(curr[0] == "N"):
-			print "numNodes: " + curr[1]
+			# print "numNodes: " + curr[1]
+			numNodes = int(curr[1])	
 		elif(curr[0] == "L"):
-			print "packetSize: " + curr[1]
+			# print "packetSize: " + curr[1]
+			packetSize = int(curr[1])
 		elif(curr[0] == "R"):
 			for i in xrange(1, len(curr)-1, 1):
-				print "range: " + curr[i]
+				# print "range: " + curr[i]
+				ranges.append(int(curr[i]))
 		elif(curr[0] == "M"):
-			print "maxAttempts: " + curr[1]
+			# print "maxAttempts: " + curr[1]
+			maxAttempts = int(curr[1])
 		elif(curr[0] == "T"):
-			print "simTime: " + curr[1]
+			# print "simTime: " + curr[1]
+			simTime = int(curr[1])
 		else:
 			print "Error: Invalid input file"
-		print line
+	print "numNodes: " + numNodes
+	print "packetSize: " + packetSize
+	print "ranges: " +  '[%s]' % ', '.join(map(str, ranges))
+	print "simTime: " + simTime
 
 def main():
 	print "test"
