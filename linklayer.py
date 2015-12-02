@@ -12,15 +12,19 @@ class Node:
 		self.backoff = self.backoff-1;
 
 class Channel:
-	def __init__ (self, N, L, R, M, T):
+	def __init__ (self, args):
+		(N,L,R,M,T) = args
 		self.numNodes = N
 		self.packetSize = L
 		self.ranges = R # a list
 		self.maxAttempt = M
-		self.simTime = t
+		self.simTime = T
 		self.channelOccupied = 0
 		self.utilCount = 0
 		self.idleCount = 0
+		self.nodes = []
+		for i in range(self.numNodes):
+			self.nodes.append(Node(i))
 	def occupyChannel(self, nodeID):
 		self.channelOccupied = nodeID
 	def freeChennel(self):
@@ -36,6 +40,7 @@ def parse(filename):
 	numNodes = 0
 	packetSize = 0
 	ranges = []
+	maxAttempts = 0
 	simTime = 0
 	for line in lines:
 		#grab initialization vars
@@ -47,7 +52,7 @@ def parse(filename):
 			# print "packetSize: " + curr[1]
 			packetSize = int(curr[1])
 		elif(curr[0] == "R"):
-			for i in xrange(1, len(curr)-1, 1):
+			for i in xrange(1, len(curr), 1):
 				# print "range: " + curr[i]
 				ranges.append(int(curr[i]))
 		elif(curr[0] == "M"):
@@ -66,15 +71,16 @@ def parse(filename):
 	result.append(numNodes)
 	result.append(packetSize)
 	result.append(ranges)
+	result.append(maxAttempts)
 	result.append(simTime)
+	f.close()
 	return result
 
 def main():
-	print "test"
 	args = parse("input.txt")
 	for arg in args:
 		 print str(arg)
-	
+	channel = Channel(args)
 if __name__ == '__main__':
 	main();
 
