@@ -285,7 +285,8 @@ def main(argc, argv):
 
 		# part d
 		rangesD = [1, 2, 4, 8, 16]
-		plt.figure()
+		fig = plt.figure()
+		ax = plt.subplot(111)
 		for rangeD in rangesD:
 			args[2] = [rangeD]
 			nArray = []
@@ -301,12 +302,14 @@ def main(argc, argv):
 						channel.tick()
 					totalAfterRunsUtil += (channel.getResultsNums())[0]
 				utilPcts.append(float(totalAfterRunsUtil)/float(numRuns))
-				print "R: " + str(rangeD) + "\tN: " + str(n) + "\tChannel Utilization: " + str(utilPcts[-1])
+				print "R: " + str(rangeD) + "\tN: " + str(n) + "\tChannel Utilization: " + str(utilPcts[-1]) + "%"
 			plt.plot(nArray, utilPcts, label = "R=" + str(rangeD))
-
+		box = ax.get_position()
+		ax.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
+		ax.legend(loc='upper center', bbox_to_anchor=(.5, -0.10), fancybox=True, shadow=True, ncol=len(rangesD))
 		plt.ylabel('Channel Utilization (in percentage)')
 		plt.xlabel('N = Number of Nodes (5 to 100)')
-		plt.legend()
+		# plt.legend()
 		plt.savefig('partd.png')
 		plt.ioff()
 		plt.close()
@@ -330,7 +333,7 @@ def main(argc, argv):
 						channel.tick()
 					totalAfterRunsUtil += (channel.getResultsNums())[0]
 				utilPcts.append(float(totalAfterRunsUtil)/float(numRuns))
-				print "L: " + str(lval) + "\tN: " + str(n) + "\tChannel Utilization: " + str(utilPcts[-1])
+				print "L: " + str(lval) + "\tN: " + str(n) + "\tChannel Utilization: " + str(utilPcts[-1]) + "%"
 			plt.plot(nArray, utilPcts, label = "L=" + str(lval))
  
                 plt.ylabel('Channel Utilization (in percentage)')
