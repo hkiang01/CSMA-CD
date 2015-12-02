@@ -186,8 +186,8 @@ def parse(filename):
 
 def main():
 	args = parse("input.txt")
-	for arg in args:
-		 print str(arg)
+	# for arg in args:
+	# 	 print str(arg)
 	channel = Channel(args)
 
 	channel.initNodes()
@@ -195,7 +195,7 @@ def main():
 		channel.tick()
 		#channel.printResults()
 		#raw_input()
-	channel.printResults()
+	# channel.printResults()
 
 	f = open("output.txt", "w")
 	f.write(channel.getResults())
