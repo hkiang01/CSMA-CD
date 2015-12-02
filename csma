@@ -188,8 +188,8 @@ def parse(filename):
 	f.close()
 	return result
 
-def main():
-	args = parse("input.txt")
+def main(argc, argv):
+	args = parse(argv[1])
 	# for arg in args:
 	# 	 print str(arg)
 	channel = Channel(args)
@@ -206,5 +206,5 @@ def main():
 	f.close()
 
 if __name__ == '__main__':
-	main();
+	main(len(sys.argv), sys.argv);
 
