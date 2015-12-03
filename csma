@@ -75,9 +75,9 @@ class Channel:
 	def freeChannel(self):
 		self.channelOccupied = 0
 	def getOccupiedPct(self):
-		return (float(self.occupiedCount)/float((self.occupiedCount + self.idleCount)))*100.0
+		return (float(self.occupiedCount)/float((self.occupiedCount + self.idleCount+self.collisions)))*100.0
 	def getIdlePct(self):
-		return (float(self.idleCount)/float((self.occupiedCount + self.idleCount)))*100.0
+		return (float(self.idleCount)/float((self.occupiedCount + self.idleCount+self.collisions)))*100.0
 	def getAvgST(self):
 		for node in self.nodes:
 			self.totalLocalSent += node.numSent
